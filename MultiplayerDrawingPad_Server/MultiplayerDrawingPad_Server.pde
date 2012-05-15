@@ -16,7 +16,7 @@ int connectedClients;
 color clientDrawColors [];
 
 void setup () {
-  //size(600, 600);
+  size(600, 600);
   
   fs = new FullScreen(this);
   cp5 = new ControlP5(this);
@@ -33,14 +33,14 @@ void setup () {
     );
   }
  
-  background(0);
+  clearPad();
   noStroke();
   
-  cp5.addBang("clearPad")
+  cp5.addButton("clearPad")
     .setPosition(10, 10)
     .setSize(200, 20)
-    .setTriggerEvent(Bang.RELEASE)
     .setLabel("Clear Drawing Pad")
+    .updateSize()
     ;
   
   server = new Server(this, port);
@@ -82,11 +82,15 @@ void draw () {
         int x = int(tokens[2]);
         int y = int(tokens[3]);
         
-        // Scale x and y to window size
-        x = round((x / 1024.0) * width);
-        y = round((y / 1024.0) * height);
-        
-        println(id + " " + x + " " + y);
+        if (id >= 0 && id < clients.length) {
+          if (client.ip().equals(clients[id].ip())) {
+            // Scale x and y to window size
+            x = round((x / 1024.0) * width);
+            y = round((y / 1024.0) * height);
+            
+            println(id + " " + x + " " + y);
+          }
+        }
         
         
         fill(clientDrawColors[id]);
@@ -108,6 +112,22 @@ void draw () {
 
 void clearPad () {
   background(255);
+  
+  fill(0);
+  text("IP: " + getIP(), 220, 25);
+}
+
+String getIP () {
+  String ip = "";
+  
+  try {
+    ip = java.net.InetAddress.getLocalHost().getHostAddress();
+  }
+  catch (Exception e) {
+    
+  }
+  
+  return ip;
 }
 
 void updateClientList () {
@@ -124,13 +144,10 @@ void keyPressed () {
   if (keyCode == 122) {
     if (fs.isFullScreen() == true) {
       fs.leave();
-      size(600, 600);
     }
     else {
       fs.enter();
-      Dimension [] resolutions = fs.getResolutions();
       
-      size(resolutions[resolutions.length - 1].width, resolutions[resolutions.length - 1].height
     }
   }
 }
