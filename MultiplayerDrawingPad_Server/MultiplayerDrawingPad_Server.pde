@@ -1,15 +1,25 @@
+import controlP5.*;
+import fullscreen.*;
 import processing.net.*;
 
 final int maxclients = 30;
-final int port = 8080;
+final int port = 50249;
+
+FullScreen fs;
+ControlP5 cp5;
 
 Server server;
 
 Client clients [];
+int connectedClients;
+
 color clientDrawColors [];
 
 void setup () {
-  size(400, 400);
+  //size(600, 600);
+  
+  fs = new FullScreen(this);
+  cp5 = new ControlP5(this);
   
   clients = new Client[maxclients];
   
@@ -23,8 +33,15 @@ void setup () {
     );
   }
  
-  background(255);
+  background(0);
   noStroke();
+  
+  cp5.addBang("clearPad")
+    .setPosition(10, 10)
+    .setSize(200, 20)
+    .setTriggerEvent(Bang.RELEASE)
+    .setLabel("Clear Drawing Pad")
+    ;
   
   server = new Server(this, port);
 }
@@ -89,4 +106,32 @@ void draw () {
   }
 }
 
+void clearPad () {
+  background(255);
+}
+
+void updateClientList () {
+  int numClients = 0;
+  for (int i = 0; i < clients.length; i++ ) {
+    if (clients[i] != null) {
+      numClients++;
+    }
+  }
+  connectedClients = numClients;
+}
+
+void keyPressed () {
+  if (keyCode == 122) {
+    if (fs.isFullScreen() == true) {
+      fs.leave();
+      size(600, 600);
+    }
+    else {
+      fs.enter();
+      Dimension [] resolutions = fs.getResolutions();
+      
+      size(resolutions[resolutions.length - 1].width, resolutions[resolutions.length - 1].height
+    }
+  }
+}
 

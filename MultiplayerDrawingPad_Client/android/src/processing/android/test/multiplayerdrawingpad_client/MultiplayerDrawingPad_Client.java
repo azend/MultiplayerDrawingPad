@@ -1,5 +1,22 @@
-import apwidgets.*;
-import processing.net.*;
+package processing.android.test.multiplayerdrawingpad_client;
+
+import processing.core.*; 
+
+import apwidgets.*; 
+import processing.net.*; 
+
+import processing.net.*; 
+
+import android.view.MotionEvent; 
+import android.view.KeyEvent; 
+import android.graphics.Bitmap; 
+import java.io.*; 
+import java.util.*; 
+
+public class MultiplayerDrawingPad_Client extends PApplet {
+
+
+
 
 APWidgetContainer widgetContainer; 
 APEditText ipAddressField;
@@ -21,7 +38,7 @@ boolean changed;
 int halfwidth;
 int halfheight;
 
-void setup () {
+public void setup () {
 	// size( 400, 400 );
 
         ip = "192.168.1.100";
@@ -41,7 +58,7 @@ void setup () {
 
 }
 
-void draw () {
+public void draw () {
 	if (client != null && id > -1) {
 		background(255);
 		noFill();
@@ -63,8 +80,8 @@ void draw () {
 		);
 
 		if (changed) {
-                        int scaledX = round( ( joyX / ( width * 1.0 ) ) * 1024.0 );
-                        int scaledY = round( ( joyY / ( height * 1.0 ) ) * 1024.0 );
+                        int scaledX = round( ( joyX / ( width * 1.0f ) ) * 1024.0f );
+                        int scaledY = round( ( joyY / ( height * 1.0f ) ) * 1024.0f );
 			client.write("UPDATE " + id + " " + scaledX + " " + scaledY);
 			client.write(10); // Write newline
 			changed = false;
@@ -83,25 +100,25 @@ void draw () {
 
 }
 
-void mouseDragged () {
+public void mouseDragged () {
 	joyX = mouseX - halfwidth;
 	joyY = mouseY - halfheight;
 
 	changed = true;
 }
 
-void mousePressed () {
+public void mousePressed () {
 	buttonIsPressed = true;
 	changed = true;
 
 }
 
-void mouseReleased () {
+public void mouseReleased () {
 	buttonIsPressed = false;
 	changed = true;
 }
 
-void initConnection () {
+public void initConnection () {
   client = new Client(this, ip, port);
 
   id = -1;
@@ -121,7 +138,7 @@ void initConnection () {
       
       message = trim(message);
           
-      id = int(message);
+      id = PApplet.parseInt(message);
       
       println( "ID acquired.. " + id);
     }
@@ -129,18 +146,18 @@ void initConnection () {
 
 }
 
-void stopConnection () {
+public void stopConnection () {
   client.write("DIE " + id);
   client.write(10);
   id = -1;
   client = null;
 }
 
-void stop () {
+public void stop () {
   stopConnection();
 }
 
-void onClickWidget(APWidget widget){
+public void onClickWidget(APWidget widget){
   
   if(widget == changeAddress){ //if it was button1 that was clicked
     if (client == null) {
@@ -150,7 +167,7 @@ void onClickWidget(APWidget widget){
         ip = address[0];
         
         if ( address.length > 1 ) {
-          port = int(address[1]);
+          port = PApplet.parseInt(address[1]);
         }
       }
       
@@ -166,4 +183,6 @@ void onClickWidget(APWidget widget){
     }
   }
   
+}
+
 }
